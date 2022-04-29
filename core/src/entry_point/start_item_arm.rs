@@ -20,16 +20,16 @@ pub unsafe extern "C" fn _start() -> ! {
         subw r4, pc, #4    // r4 = pc
         ldr r5, =.start   // r5 = address of .start
         cmp r4, r5
-        beq .Lstack_init  // Jump to stack initialization if pc was correct
+        beq 2f  // Jump to stack initialization if pc was correct
         movw r0, #8       // LowLevelDebug driver number
         movw r1, #1       // LowLevelDebug 'print status code' command
         movw r2, #2       // LowLevelDebug relocation failed status code
         svc 2             // command() syscall
-        .Lyield_loop:
+        1:
         svc 0             // yield() syscall (in infinite loop)
-        b .Lyield_loop
+        b 1b
 
-        .Lstack_init:
+        2:
         // Compute the stacktop (stack_start). The stacktop is computed as
         // stack_size + mem_start plus padding to align the stack to a multiple
         // of 8 bytes. The 8 byte alignment is to follow ARM AAPCS:
